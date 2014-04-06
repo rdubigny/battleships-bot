@@ -62,14 +62,39 @@ class Bot
 
   # bot's brain
   initPlay: () ->
-    # TODO improve the intialization
-    diff = 0
     config = {}
+    side = []
     for i in [2..5]
-      config[i] =
-        point: "#{@rand(7-i)}#{diff}"
-        orientation: "horizontal"
-      diff = diff + 1 + @rand(1)
+      attempt = @rand(3)
+      while attempt in side
+        attempt = @rand(3)
+      side[i] = attempt
+
+    for size in [2..5]
+      a = @rand 1
+      b = a + @rand(7 - size - (2 * a))
+      if side[size] is 0
+        x = a
+        y = b
+      if side[size] is 1
+        x = b
+        y = 7 - a
+      if side[size] is 2
+        x = 7 - a
+        y = b + 1
+      if side[size] is 3
+        x = b + 1
+        y = a
+
+      if side[size] % 2 is 0
+        orientation = "vertical"
+      else
+        orientation = "horizontal"
+
+      config[size] =
+        point: "#{x}#{y}"
+        orientation: "#{orientation}"
+
     console.log JSON.stringify config
 
   returnRandomMove: () ->
@@ -93,7 +118,7 @@ class Bot
     @returnMove x, y
 
   getNextTarget: (x, y) ->
-    # TODO take into acount the last two hit and not the last one
+    # TODO take into acount the last two hit and not the last one only
     # TODO take into acount the destroyed ship
     return {'x': x - 1; 'y': y} if @isValidMove(x - 1, y)
     return {'x': x + 1; 'y': y} if @isValidMove(x + 1, y)
